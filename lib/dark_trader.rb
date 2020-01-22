@@ -2,8 +2,6 @@ require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 
-	
-
 
 def crypto_name_array
 	crypto_name_array = [] 
@@ -26,7 +24,6 @@ def crypto_price_array
 	crypto_price_array
 end
 print crypto_price_array
-
 
 
 
