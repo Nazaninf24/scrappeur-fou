@@ -2,40 +2,28 @@ require 'rubygems'
 require 'nokogiri'
 require 'open-uri'
 
+def crypto_scrapper
+    page = Nokogiri::HTML(open("https://coinmarketcap.com/all/views/all/"))
 
-def crypto_name_array
-	crypto_name_array = [] 
-	page = Nokogiri::HTML(open("https://coinmarketcap.com/all/views/all/")) 
-    page.xpath('//*[@class="text-left col-symbol"]').each do |node|
-    crypto_name_array << node.text
-	end
-	crypto_name_array
+    tr_nb = page.xpath('/html/body/div/div/div[2]/div[1]/div[2]/div[2]/div[2]/div[3]/div/table/tbody/tr').to_s.scan(/(<tr)/).count
+    crypto_name = []
+    crypto_price = []
+    (1..tr_nb).each do |i|
+        crypto_name << page.xpath("/html/body/div/div/div[2]/div[1]/div[2]/div[2]/div[2]/div[3]/div/table/tbody/tr[#{i}]/td[3]/div").text
+        crypto_price << page.xpath("/html/body/div/div/div[2]/div[1]/div[2]/div[2]/div[2]/div[3]/div/table/tbody/tr[#{i}]/td[5]/a").text.delete_prefix('$').delete(',').to_f
+    end
+
+    crypto_hash = {}
+    crypto_hash_array = []
+    crypto_name.each do |i|
+        crypto_hash[i] = crypto_price[crypto_name.rindex(i)]
+    end
+
+
+    crypto_hash.each {|k,v| crypto_hash_array << {k => v}} 
+
+    return crypto_hash_array
 end
 
-print crypto_name_array
 
-
-def crypto_price_array
-	crypto_price_array = []
-	page = Nokogiri::HTML(open("https://coinmarketcap.com/all/views/all/")) 
-	page.xpath('//td[5]').each do |node|
-	crypto_price_array << node.text.delete("\n")
-	end
-	crypto_price_array
-end
-print crypto_price_array
-
-
-
-def hash_of_crypto_rate
-    #result = Hash.new { |hash_of_crypto_rate, crypto_name_array | hash_of_crypto_rate[crypto_name_array] = crypto_price_array }
-    key = crypto_name_array
-    value = crypto_price_array
-    hash_of_crypto_rate = crypto_name_array.zip(crypto_price_array).to_h
-end
-
-print hash_of_crypto_rate
-
-
-
- 
+print crypto_scrapper
